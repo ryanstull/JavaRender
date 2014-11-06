@@ -61,26 +61,6 @@ public class Vector3D{
 		return this;
 	}
 	
-	public Vector3D rotateAboutAxis(double angle,Vector3D axis)
-	{
-	    double s = Math.sin(angle);
-	    double c = Math.cos(angle);
-	    double k = 1.0 - c;
-	    
-	    double nx = x * (c + k * axis.x * axis.x) + y * (k * axis.x * axis.y - s * axis.z)
-	            + z * (k * axis.x * axis.z + s * axis.y);
-	    double ny = x * (k * axis.x * axis.y + s * axis.z) + y * (c + k * axis.y * axis.y)
-	            + z * (k * axis.y * axis.z - s * axis.x);
-	    double nz = x * (k * axis.x * axis.z - s * axis.y) + y * (k * axis.y * axis.z + s * axis.x)
-	            + z * (c + k * axis.z * axis.z);
-	    
-	    x = nx;
-	    y = ny;
-	    z = nz;
-	    
-	    return this;
-	}
-	
 	public double dotProduct(Vector3D in){
 		return this.x*in.x+this.y*in.y+this.z*in.z;
 	}
