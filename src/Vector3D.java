@@ -65,6 +65,10 @@ public class Vector3D{
 		return this.x*in.x+this.y*in.y+this.z*in.z;
 	}
 	
+	public double angleWithCrs(Vector3D in){
+		return Math.asin(this.crossProduct(in).magnitude()/(this.magnitude()*in.magnitude()));
+	}
+	
 	public double angleWith(Vector3D in){
 		double dot = new Vector3D(this).dotProduct(in);
 		return Math.acos(dot/(magnitude()*in.magnitude()));
@@ -72,14 +76,18 @@ public class Vector3D{
 	
 	public Vector3D crossProduct(Vector3D in){
 		Vector3D rtrn = new Vector3D();
-		rtrn.x = this.y*in.z-this.z*in.y;
-		rtrn.y = this.z*in.x-this.x*in.z;
-		rtrn.z = this.x*in.y-this.y*in.x;
+		rtrn.x = y*in.z-z*in.y;
+		rtrn.y = z*in.x-x*in.z;
+		rtrn.z = x*in.y-y*in.x;
 		return rtrn;
 	}
 	
+	public Vector3D normalize(){
+		return divide(magnitude());
+	}
+	
 	public Vector3D projection(Vector3D in){
-		return in.multiply(this.dotProduct(in)/Math.pow(in.magnitude(),2));
+		return new Vector3D(in).multiply(this.dotProduct(in)/Math.pow(in.magnitude(),2));
 	}
 	
 	public double magnitude(){
@@ -88,15 +96,6 @@ public class Vector3D{
 	
 	public Vector3D unitVector(){
 		return new Vector3D(this).divide(magnitude());
-	}
-	
-	public double[] angles(){
-		double[] rtrn = new double[2];
-		rtrn[0] = Math.atan(y/x);
-		rtrn[1] = Math.atan(z/Math.sqrt(Math.pow(x,2)+Math.pow(y,2)));
-//		rtrn[0] = Math.atan(x/z);
-//		rtrn[1] = Math.atan(y/Math.sqrt(Math.pow(z, 2)+Math.pow(x, 2)));
-		return rtrn;
 	}
 	
 	@Override

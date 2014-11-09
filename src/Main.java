@@ -13,38 +13,33 @@ public class Main extends JFrame implements KeyListener,ActionListener{
 
 	private static final long serialVersionUID = 3206847208968227199L;
 
-	static final int NUM_OBJECTS = 2;
-	static final int[] screenDims = {1000,1000};
-
+	static final int NUM_OBJECTS = 100;
+	static final int[] screenDims = {700,700};
 	static boolean initialized = false;
-
-	static Triangle[] objects = new Triangle[NUM_OBJECTS];
+	static Square[] objects = new Square[NUM_OBJECTS];
 	static ArrayList<Point[]> renderPoints = new ArrayList<Point[]>();
-
-	Camera cam;
+	static Camera cam;
 
 	public static void main(String[] args){
-		renderPoints = new ArrayList<Point[]>();
-		for (int i = 0; i < NUM_OBJECTS; i++) {
-			renderPoints.add(new Point[3]);
-		}
-		objects[0] = new Triangle(new Vector3D[]{new Vector3D(10,1,0),new Vector3D(10, 0, 1),new Vector3D(10, -1, 0)});
-		objects[1] = new Triangle(new Vector3D[]{new Vector3D(12,0,10),new Vector3D(12,-10,0),new Vector3D(12,0,-10)});
-		new Main();
-//		
-//		Quaternion s = Quaternion.rotationQuaternion(-Math.PI/2,1,0,0);
-//		Quaternion k = Quaternion.rotationQuaternion(-Math.PI/2,1,0,0);
-//		System.out.printf("%s",z.rotateVector(new Vector3D(0,0,1)));
+//		int offset = -1;
+//		int root = (int) Math.sqrt(NUM_OBJECTS);
+//		for (int i = 0; i < root; i++) {
+//			for (int j = 0; j < root; j++) {
+//			objects[i*root+j]=new Square('x',offset+i*2,offset+j*2);
+//			}
+//		}	
+//		for (int i = 0; i < root; i++) {
+//			for (int j = 0; j < root; j++) {
+//			objects[100+i*root+j]=new Square('x',offset+i*2,offset+j*2);
+//			}
+//		}	
 		
-//		Camera cam = new Camera(new Vector3D(0,0,7),new Vector3D(0,0,1));
-//		Vector3D x = new Vector3D(0,0,5);
-//		System.out.printf("%f ,  %f%n",x.angles()[0],x.angles()[1]);
-//		Vector3D camC = cam.getCameraCoords(x);
-//		System.out.println(camC);
-//		Point pane = getPaneCoords(camC);
-//		System.out.println(pane);
-		//		Vector3D x = new Vector3D(1,0,0);
-		//		System.out.println(x.rotateBLAH(Math.PI/4));
+//		cam = new Camera(new Vector3D(0,0,0),new Vector3D(-1,0,0));
+//		System.out.println(cam.getCameraCoords(new Vector3D(-3,0,0)));
+		
+//		objects[0] = new Square(new Vector3D[]{new Vector3D(2,0,1),new Vector3D(1, 0,2),new Vector3D(1,1,2),new Vector3D(2,1,1)});
+//		objects[1] = new Square(new Vector3D[]{new Vector3D(12,1,-1),new Vector3D(12,1,1),new Vector3D(12,-1,1),new Vector3D(12,-1,-1)});
+		new Main();
 	}
 
 	public Main() {
@@ -65,32 +60,33 @@ public class Main extends JFrame implements KeyListener,ActionListener{
 		if(in.z<0){
 			return null;
 		}
-		double xs = in.x/in.z*(1/Math.tan(Camera.FOV_angle))*screenDims[0];
-		double ys = in.y/in.z*(1/Math.tan(Camera.FOV_angle))*screenDims[1];
-		rtrn.setLocation(Math.round(xs),Math.round(ys)*-1);
+		double xs = in.x/(in.z*Math.tan(Camera.FOV_angle)+1)*screenDims[0];
+		double ys = in.y/(in.z*Math.tan(Camera.FOV_angle)+1)*screenDims[1];
+		rtrn.setLocation(Math.round(xs)*-1,Math.round(ys)*-1);
 		return rtrn;
 	}
 
 	public void paint(Graphics g) {
+		int numPoints = 4;
 		if(initialized){
-			int[][] xPoints = new int[renderPoints.size()][3];
-			int[][] yPoints = new int[renderPoints.size()][3];
+			int[][] xPoints = new int[renderPoints.size()][numPoints];
+			int[][] yPoints = new int[renderPoints.size()][numPoints];
 			for (int i = 0; i < renderPoints.size(); i++) {
-				for (int j = 0; j < 3; j++) {
+				for (int j = 0; j < numPoints; j++) {
 					xPoints[i][j] = renderPoints.get(i)[j].x+screenDims[0]/2;
 					yPoints[i][j] = renderPoints.get(i)[j].y+screenDims[1]/2;
 				}
 			}
 			g.clearRect(0, 0, screenDims[0],screenDims[1]);
-			for (int i = 0; i < objects.length; i++) {
-				g.drawPolygon(xPoints[i], yPoints[i], 3);
+			for (int i = 0; i < renderPoints.size(); i++) {
+				g.drawPolygon(xPoints[i], yPoints[i], numPoints);
 			}
 		}
 	}
 
 	public void generateRenderPoints(){
 		for (int i = 0; i < objects.length; i++) {
-			Point[] points = new Point[3];
+			Point[] points = new Point[4];
 			for (int j = 0; j < points.length; j++) {
 				Vector3D camCoords = cam.getCameraCoords(objects[i].points[j]);
 				Point panCoords = getPaneCoords(camCoords);
@@ -113,11 +109,13 @@ public class Main extends JFrame implements KeyListener,ActionListener{
 		case KeyEvent.VK_DOWN: cam.position.add(cam.negAngles); break;
 		case KeyEvent.VK_RIGHT: cam.position.add(cam.rightAngle); break;
 		case KeyEvent.VK_LEFT: cam.position.add(cam.negRightAngle); break;
-		case KeyEvent.VK_P: cam.position.add(new Vector3D(0,.1,0)); break;
-		case KeyEvent.VK_L: cam.position.add(new Vector3D(0,-.1,0)); break;
-		case KeyEvent.VK_Q: cam.angle = Quaternion.rotationQuaternion(Math.PI/20,Vector3D.Y_AXIS).rotateVector(cam.angle); cam.setOtherAngles(); break;
-		case KeyEvent.VK_E: cam.angle = Quaternion.rotationQuaternion(-Math.PI/20,Vector3D.Y_AXIS).rotateVector(cam.angle); cam .setOtherAngles(); break;
+		case KeyEvent.VK_P: cam.position.add(new Vector3D(0,1,0)); break;
+		case KeyEvent.VK_H: cam.angle = new Vector3D(1,0,0); break;
+		case KeyEvent.VK_L: cam.position.add(new Vector3D(0,-1,0)); break;
+		case KeyEvent.VK_Q: cam.angle = Quaternion.rotationQuaternion(Math.PI/32,Vector3D.Y_AXIS).rotateVector(cam.angle); break;
+		case KeyEvent.VK_E: cam.angle = Quaternion.rotationQuaternion(-Math.PI/32,Vector3D.Y_AXIS).rotateVector(cam.angle); break;
 		}
+		cam.setOtherAngles();
 		System.out.println(cam);
 	}
 
