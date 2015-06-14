@@ -3,7 +3,7 @@ The purpose of this project was to write a software renderer in Java from scratc
 
 Currently it displays a grid, as to provide location reference, and you can move by pressing...
 
-* Key: Action 
+Key: Action 
 * Up: Move forward
 * Left: move left
 * Right: move right
