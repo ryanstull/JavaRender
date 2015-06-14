@@ -24,7 +24,7 @@ public class Window extends JFrame implements Runnable{
 		renderPoints = new ArrayList<Point[]>();
 		im1 = new BufferedImage(screenDims[0],screenDims[1],BufferedImage.TYPE_3BYTE_BGR);
 		im2 = new BufferedImage(screenDims[0],screenDims[1],BufferedImage.TYPE_3BYTE_BGR);
-		
+
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		addKeyListener(new KeyHandler());
 		setSize(screenDims[0],screenDims[1]);
